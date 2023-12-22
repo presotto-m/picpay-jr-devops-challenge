@@ -7,7 +7,9 @@ services:
     networks:
       - frontend
       - backend
-  
+    env_file:
+      - ./.env
+
   reader:
     build: services/reader
     ports:
@@ -15,24 +17,38 @@ services:
     networks:
       - frontend
       - backend
+    env_file:
+      - ./.env
 
   writer:
     build: services/writer
     ports:
       - "8080:8080"
+    volumes:
+      - ./app:/app
     networks:
       - frontend
       - backend
+    env_file:
+      - ./.env
 
   redis:
     image: "redis:alpine"
     environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - REDIS_USER=${REDIS_USER}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-    command: ["--requirepass ${REDIS_PASSWORD}"] # Define a senha ao iniciar o Redis
+    command: ["--requirepass ${REDIS_PASSWORD}"]
     networks:
       - backend
+    env_file:
+      - ./.env
 
 networks:
   frontend:
   backend:
+
+volumes:
+  app:
+    driver: local
