@@ -7,20 +7,28 @@ services:
     networks:
       - frontend
       - backend
+  
   reader:
     build: services/reader
     ports:
       - "8081:8081"
     networks:
       - frontend
+      - backend
+
   writer:
     build: services/writer
     ports:
       - "8080:8080"
     networks:
+      - frontend
       - backend
-  reids:
+
+  redis:
     image: "redis:alpine"
+    networks:
+      - backend
 
 networks:
+  frontend:
   backend:
