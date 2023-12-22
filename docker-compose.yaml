@@ -26,6 +26,10 @@ services:
 
   redis:
     image: "redis:alpine"
+    environment:
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: ["--requirepass ${REDIS_PASSWORD}"] # Define a senha ao iniciar o Redis
     networks:
       - backend
 
