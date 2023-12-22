@@ -1,9 +1,5 @@
 # Desafio DevOps jr PicPay
 
-Obrigado pelo interesse em fazer parte do nosso time! Preparamos este desafio com carinho para ajudar a entender um pouco mais dos seus conhecimentos na área de DevOps/SRE
-
-Se não entender algum conceito ou parte do problema, não é motivo para se preocupar! Queremos que faça o desafio até onde souber.
-
 No mais, divirta-se :D
 
 ## Conteúdo do repositório
