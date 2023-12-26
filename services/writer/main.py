@@ -33,7 +33,7 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         if self.path == '/write':
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length).decode('utf-8')
-            redishost = "localhost"  # Altere o host do Redis conforme necessário
+            redishost = "picpay-jr-devops-challenge-redis-1"  # Altere o host do Redis conforme necessário
             redisclient = redis.Redis(host=redishost)
             redisclient.set("SHAREDKEY", post_data)
             self.wfile.write(bytes(json.dumps({"message": "Data written to Redis"}), "utf8"))
