@@ -9,6 +9,11 @@ services:
       - backend
     env_file:
       - ./.env
+    depends_on: 
+      - reader
+      - writer
+    volumes: 
+      - ./services/frontend:/app      
 
   reader:
     build: services/reader
@@ -19,18 +24,20 @@ services:
       - backend
     env_file:
       - ./.env
+    depends_on:
+      - redis      
 
   writer:
     build: services/writer
     ports:
       - "8080:8080"
-    volumes:
-      - ./app:/app
     networks:
       - frontend
       - backend
     env_file:
       - ./.env
+    depends_on:
+      - redis      
 
   redis:
     image: "redis:alpine"
