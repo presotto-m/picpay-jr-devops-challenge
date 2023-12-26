@@ -10,9 +10,8 @@ import (
 )
 
 func main() {
-	redisHost := "picpay-jr-devops-challenge-redis-1" // Altere para o host correto do seu servidor Redis
-	redisPort := "6379"
-
+	redis_host := "redis"
+	redis_port := "6379"
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
@@ -24,13 +23,9 @@ func main() {
 	})
 
 	mux.HandleFunc("/data", func(writer http.ResponseWriter, request *http.Request) {
-		client := redis.NewClient(&redis.Options{Addr: redisHost + ":" + redisPort})
-		val, err := client.Get(client.Context(), "SHAREDKEY").Result()
-		if err != nil {
-			http.Error(writer, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		fmt.Fprintf(writer, val)
+		client := redis.NewClient(&redis.Options{Addr: redis_host + ":" + redis_port})
+		key := client.Get("SHAREDKEY")
+		fmt.Fprintf(writer, key.Val())
 	})
 
 	handler := cors.New(cors.Options{
@@ -38,5 +33,6 @@ func main() {
 		AllowedHeaders: []string{"*"},
 	}).Handler(mux)
 
-	log.Fatal(http.ListenAndServe(":8081", handler))
+	log.Fatal(http.ListenAndServe(":8080", handler))
+
 }
