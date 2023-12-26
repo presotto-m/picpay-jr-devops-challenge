@@ -1,38 +1,42 @@
 package main
 
 import (
-    "fmt"
-    "github.com/go-redis/redis"
-    "github.com/rs/cors"
-    "log"
-    "net/http"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/go-redis/redis"
+	"github.com/rs/cors"
 )
 
-
 func main() {
-    redis_host := "redis"
-    redis_port := "6379"
-    mux := http.NewServeMux()
+	redisHost := "picpay-jr-devops-challenge-redis-1" // Altere para o host correto do seu servidor Redis
+	redisPort := "6379"
 
-    mux.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request){
-        if request.Method == "OPTIONS" {
-            writer.WriteHeader(http.StatusOK)
-            return
-        }
-        fmt.Fprintf(writer, "up")
-    })
+	mux := http.NewServeMux()
 
-    mux.HandleFunc("/data", func(writer http.ResponseWriter, request *http.Request) {
-        client := redis.NewClient(&redis.Options{Addr: redis_host+":"+redis_port})
-        key := client.Get(client.Context(),"SHAREDKEY")
-        fmt.Fprintf(writer, key.Val())
-    })
+	mux.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
+		if request.Method == "OPTIONS" {
+			writer.WriteHeader(http.StatusOK)
+			return
+		}
+		fmt.Fprintf(writer, "up")
+	})
 
-    handler := cors.New(cors.Options{
-        AllowedOrigins: []string{"*"},
-        AllowedHeaders: []string{"*"},
-    }).Handler(mux)
+	mux.HandleFunc("/data", func(writer http.ResponseWriter, request *http.Request) {
+		client := redis.NewClient(&redis.Options{Addr: redisHost + ":" + redisPort})
+		val, err := client.Get(client.Context(), "SHAREDKEY").Result()
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(writer, val)
+	})
 
-    log.Fatal(http.ListenAndServe(":8081", handler))
+	handler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"*"},
+	}).Handler(mux)
 
+	log.Fatal(http.ListenAndServe(":8081", handler))
 }
