@@ -7,11 +7,11 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def _send_cors_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', '*')
-        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
 
     def do_OPTIONS(self):
-        self.send_response(200, "ok")
+        self.send_response(200)
         self._send_cors_headers()
         self.end_headers()
 
@@ -22,23 +22,24 @@ class RequestHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
         if self.path == '/health':
-            self.wfile.write(bytes(f"up", "utf8"))
+            self.wfile.write(bytes(json.dumps({"status": "up"}), "utf8"))
 
-        return
     def do_POST(self):
         self.send_response(201)
         self.send_header("Content-type", "application/json")
         self._send_cors_headers()
         self.end_headers()
+        
         if self.path == '/write':
             content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            redishost = "redis"
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            redishost = "localhost"  # Altere o host do Redis conforme necessário
             redisclient = redis.Redis(host=redishost)
-            redisclient.set("SHAREDKEY",post_data.decode('utf-8'))
+            redisclient.set("SHAREDKEY", post_data)
+            self.wfile.write(bytes(json.dumps({"message": "Data written to Redis"}), "utf8"))
 
-
-
-handler_object = RequestHandler
-server = socketserver.TCPServer(("", 8080), handler_object)
-server.serve_forever()
+if __name__ == "__main__":
+    handler_object = RequestHandler
+    with socketserver.TCPServer(("", 8080), handler_object) as server:
+        print("Server started at http://localhost:8080")
+        server.serve_forever()
