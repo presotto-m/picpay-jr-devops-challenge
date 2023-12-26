@@ -46,7 +46,7 @@ const writer = () => {
 }
 
 const readerhealth = (readerparagraph) => {
-    const url='http://localhost:8080/health';
+    const url='http://localhost:8081/health';
     fetch(url, {
         method: "GET",
         mode: 'cors',
@@ -67,7 +67,7 @@ const readerhealth = (readerparagraph) => {
 }
 
  const writerhealth = (writerparagraph) => {
-    const url='http://localhost:8081/health';
+    const url='http://localhost:8080/health';
     fetch(url, {
         method: "GET",
         mode: 'cors',
@@ -99,7 +99,7 @@ const assembleStatus = (paragraph, service, status) => {
 async function writeData(e) {
     e.preventDefault();
 
-    const url='http://localhost:8081/write';
+    const url='http://localhost:8080/write';
     fetch(url, {
         method: "POST",
         body: e.target.elements.post.value,
@@ -115,7 +115,7 @@ async function writeData(e) {
 }
 
 const readData = (paragraph) => {
-    const url='http://localhost:8080/data';
+    const url='http://localhost:8081/data';
     fetch(url, {
         method: "GET",
         mode: 'cors',
